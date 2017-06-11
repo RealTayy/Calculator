@@ -1,12 +1,14 @@
 /* TO THE TO DO LIST!
-    cleanDecimals needs to be able to fix shit like 21.0000000 kek
-    DECIMALS SUPER FUCKED UP LOL!
     BUILD NEW NEGATIVE THING! do an on/off switch?
+    add ability to do 9++++++++++++++++++
  */
 package com.calculator;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 public class mainMenu {
     private JPanel mainPane;
@@ -40,10 +42,22 @@ public class mainMenu {
     private JPanel outputPane;
     private JPanel historyPanee;
 
-    private Double leftOperand;
-    private Double rightOperand;
-    private Double currentResults;
+    private String leftOperand;
+    private String rightOperand;
+    private String currentResults;
     private String currentInput;
+    private String lastResult;
+    private String currentOperation;
+    private String lastOperation;
+
+    private boolean lastOpEqual = false;
+
+    StringBuilder ongoingOperation = new StringBuilder();
+
+    //Formats for text input area depending on length of string
+    String formatA = "###,###.###############";
+    String formatE = "0.0000000000000#E0";
+    DecimalFormat currentFormat = new DecimalFormat(formatA);
 
     public mainMenu() {
         //Add Mouse Listeners for Numbers
@@ -58,8 +72,56 @@ public class mainMenu {
         b9.addActionListener(new numberButtonClicked(b9.getText()));
         b0.addActionListener(new numberButtonClicked(b0.getText()));
 
+        //Add Mouse Listeners for Operation Buttons
+        bPlus.addActionListener(new operationButtonClicked("+"));
+        bMinus.addActionListener(new operationButtonClicked("-"));
+        bDivide.addActionListener(new operationButtonClicked("/"));
+        bTimes.addActionListener(new operationButtonClicked("*"));
+
+        bEqual.addActionListener(e -> {
+            currentOperation = "=";
+
+            //performs last operation if it exist and there is no new input
+            if (currentInput == null && lastOperation != null) {
+                if (lastOperation != null && rightOperand != null) {
+                    performOperation(lastOperation);
+                    equationTextArea.setText(lastOperation + " " + rightOperand);
+                }
+                return;
+            }
+
+            // Do nothing if there is nothing to add to yet
+            if (currentInput == null){
+                return;
+            }
+
+            //If leftOperand already has numbers in its assign currentInput to rightOperand Instead
+            if (leftOperand == null) {
+                leftOperand = currentInput;
+            } else {
+                rightOperand = currentInput;
+            }
+
+            //performs operation if left and right OPs exist
+            if(leftOperand != null && rightOperand != null){
+                performOperation(lastOperation);
+                equationTextArea.setText(null);
+            }
+
+            lastOpEqual = true;
+            currentInput = null;
+
+
+
+
+        });
+
         bDecimal.addActionListener(e -> {
-            //Deletes decimal if already exist
+            //If currentInput is 0. then it keeps it at 0.
+            if (currentInput == "0."){
+                return;
+            }
+
             if(currentInput != null && currentInput.contains(".")){
                 StringBuilder sbInput = new StringBuilder(currentInput);
 
@@ -68,32 +130,62 @@ public class mainMenu {
                     sbInput.deleteCharAt(0);
                 }
 
+                //Deletes decimal if already exist
                 sbInput.deleteCharAt(sbInput.indexOf("."));
                 currentInput = sbInput.toString();
             }
 
             //Sets text to have decimal at end
             currentInput = (currentInput == null) ? "0." : currentInput + ".";
-            inputTextArea.setText(addCommas(currentInput));
+            inputTextArea.setText(currentFormat.format(Double.parseDouble(currentInput)) + ".");
         });
 
         bSign.addActionListener(e -> {
-            StringBuilder sbInput = new StringBuilder(currentInput);
-            if (currentInput ==null){
-                currentInput = "-";
-            }
-            else if (sbInput.charAt(0) == '-') {
-                sbInput.deleteCharAt(0);
+            StringBuilder sbInput;
+
+            //If there is no current input does nothing
+            if (currentInput == null){
+                return;
             } else {
+                sbInput = new StringBuilder(currentInput);
+            }
+
+            //Takes on or takes off '-' if there is a current input
+            if (sbInput.charAt(0) == '-') {
+                if (sbInput.length() == 1) {
+                    //if the only input is currently '-' changes display back to '0'
+                    sbInput.setCharAt(0, '0');
+                    currentInput = null;
+                    inputTextArea.setText("0");
+                    return;
+                } else {
+                    //delete '-' if it is there
+                    sbInput.deleteCharAt(0);
+                }
+            } else {
+                //inserts '-' if it isn't there
                 sbInput.insert(0,"-");
             }
+
+            //Sets display text
             currentInput = sbInput.toString();
-            inputTextArea.setText(addCommas(cleanDecimals(currentInput)));
+            BigDecimal tempBD = new BigDecimal(currentInput);
+            inputTextArea.setText(currentFormat.format(tempBD));
         });
 
         bBackspace.addActionListener(e -> {
-            currentInput = currentInput.replaceFirst(".$","");
-            inputTextArea.setText(addCommas(cleanDecimals(currentInput)));
+            if (currentInput == null) {
+                return;
+            } else if (currentInput != null && currentInput.length() == 1) {
+                currentInput = null;
+                inputTextArea.setText("0");
+            } else if (currentInput != null) {
+                currentInput = currentInput.replaceFirst(".$","");
+                inputTextArea.setText(currentFormat.format(Double.parseDouble(currentInput)));
+            } else {
+                inputTextArea.setText("-1");
+            }
+
         });
 
         bClearEntry.addActionListener(e -> {
@@ -106,80 +198,13 @@ public class mainMenu {
             rightOperand = null;
             currentInput = null;
             currentResults = null;
+            lastResult = null;
+            currentOperation = null;
+            lastOperation = null;
             inputTextArea.setText("0");
             equationTextArea.setText("");
         });
 
-        bPlus.addActionListener(e -> {
-            //
-            if (currentInput == null) {
-                currentInput = "0";
-            }
-
-            //If leftOperand already has numbers in is assign currentInput to rightOperand Instead
-            if (leftOperand == null) {
-                leftOperand = Double.parseDouble(currentInput);
-            } else {
-                rightOperand = Double.parseDouble(currentInput);
-            }
-
-            //Adds left and right OPs if they exist
-            if(leftOperand != null && rightOperand != null){
-                currentResults = leftOperand + rightOperand;
-                //!!! DELETE THE LINE BELOW THIS WHEN DONE
-                historyText.setText("Left: " + leftOperand + "\n" + "Right: " + rightOperand +"\n" + "Result:" + currentResults);
-                leftOperand = currentResults;
-                inputTextArea.setText(cleanDecimals(Double.toString(currentResults)));
-            }
-
-            //Sets text for equation area
-            if (equationTextArea == null) {
-                equationTextArea.setText(cleanDecimals(currentInput) + " + ");
-            } else {
-                equationTextArea.setText(equationTextArea.getText() + cleanDecimals(currentInput) + " + ");
-            }
-            currentInput = null;
-
-        });
-
-    }
-
-    public String cleanDecimals (String str){
-        int length = str.length();
-
-        if (str == null){
-            return "-1";
-        }
-
-        //returns string of 1 length numbers
-        if (length == 1){
-            return (str.contains(".") ? "0" : str);
-        }
-
-        //Cleans up unneeded "." if there are no decimal numbers
-        if (str.substring(length-1, length).contains(".")) {
-            str = str.replace(".", "");
-        //Cleans up unneeded ".0" if there are no decimal numbers
-        } else if (str.substring(length-2, length).contains(".0")) {
-            str = str.replace(".0", "");
-        }
-
-        return str;
-    }
-
-    public String addCommas (String str){int length = str.length();
-        StringBuilder sbString = new StringBuilder(str);
-        int decimalIndex = (str.contains(".")) ? sbString.indexOf(".") : sbString.length(); //finds position of "." if there... if not return length
-        int lengthInteger = sbString.substring(0, decimalIndex).length(); //finds length of integer to the left of decimal
-        int commaNumber = (lengthInteger % 3 == 0) ? (lengthInteger /3) -1 : lengthInteger / 3; //finds number of commas needed
-        int extraNumbers = (lengthInteger % 3 == 0) ? 3 : lengthInteger % 3; //finds number of digits to the left of last comma
-
-        //Add commas in correct spots
-        for (int i = 0; i < commaNumber; i++){
-            sbString.insert((i*4)+extraNumbers,',');
-        }
-
-        return sbString.toString();
     }
 
     private class numberButtonClicked implements ActionListener {
@@ -192,12 +217,117 @@ public class mainMenu {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            if (currentInput != null && currentInput.length() >=15){
+                //Do nothing when reaching max length
+                return;
+            }
+
             if (value == "0" && currentInput == null){
                 //Do nothing if user tries to type 0 while there are no other numbers in input field
             } else {
                 currentInput = (currentInput == null) ? value : currentInput + value;
-                inputTextArea.setText(addCommas(currentInput));
+                BigDecimal currentBD = new BigDecimal(currentInput);
+                //If a decimal exist and user tries to type 0 afterwards. This displays the ".0" that would otherwise be cleaned up by DecimalFormat.
+                //Else displays as normal
+                if (currentInput.contains(".") && value == "0"){
+                    inputTextArea.setText(currentFormat.format(currentBD) + ".0");
+                } else {
+                    inputTextArea.setText(currentFormat.format(currentBD));
+                }
+
+
+
             }
+        }
+    }
+
+    private class operationButtonClicked implements ActionListener {
+
+        private String currentOperation;
+
+        public operationButtonClicked (String operation){
+            this.currentOperation = operation;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Do nothing if there is nothing to add to yet
+            if ((currentInput == null && lastResult == null) && lastOperation == null) {
+                return;
+            }
+
+
+            //Sets text for equation area
+            if (lastOpEqual == true) {
+                // replaces currentInput with lastResult for ongoing equations EX. you hit 1 + 2 then hit = THEN hit + 3 it will display the result.
+                equationTextArea.setText(lastResult + " " + currentOperation + " ");
+                lastOpEqual = false;
+            }else if (currentInput == null){
+                //This step happens when you are trying to change your operation with no currentInput
+                //Change the operation sign in the equationTextArea to new operation
+                StringBuilder tempSB = new StringBuilder(equationTextArea.getText());
+                tempSB.delete(tempSB.length() - 2, tempSB.length());
+                equationTextArea.setText(tempSB.toString() + currentOperation + " ");
+            } else {
+                //Prints out the last calculation on equationTextArea
+                equationTextArea.setText(equationTextArea.getText() + currentInput + " " + currentOperation + " ");
+            }
+
+            //If leftOperand already has numbers in it. Assign currentInput to rightOperand Instead
+            if (leftOperand == null) {
+                leftOperand = currentInput;
+            } else {
+                rightOperand = currentInput;
+            }
+
+            //Performs operation if left and right OPs exist
+            if(leftOperand != null && rightOperand != null){
+                performOperation(lastOperation);
+            }
+
+            lastOperation = currentOperation;
+            currentInput = null;
+
+        }
+    }
+
+    private void performOperation (String lastOperation){
+        BigDecimal leftBD = new BigDecimal(leftOperand);
+        BigDecimal rightBD = new BigDecimal(rightOperand);
+        BigDecimal resultBD = new BigDecimal(0);
+        //Apply function according to operation
+        switch (lastOperation){
+            case "+" :
+                resultBD = leftBD.add(rightBD);
+                break;
+            case "-" :
+                resultBD = leftBD.subtract(rightBD);
+                break;
+            case "/" :
+                resultBD = leftBD.divide(rightBD, 15 , RoundingMode.FLOOR);
+                break;
+            case "*" :
+                resultBD = leftBD.multiply(rightBD);
+                break;
+        }
+        currentResults = resultBD.toString();
+        leftOperand = currentResults;
+
+        //Returns result in input area in correct format
+        if (currentFormat.format(resultBD).length() > 18) {
+            currentFormat.applyPattern(formatE);
+            inputTextArea.setText(currentFormat.format(resultBD));
+            currentFormat.applyPattern(formatA);
+        } else {
+            inputTextArea.setText(currentFormat.format(resultBD));
+        }
+
+        //creates lastResult if doing "=" operations
+        if (currentOperation == "=") {
+            lastResult = resultBD.toString();
+        } else {
+            //cleans up rightOperand for combo equations but keeps it if you want to spam =======
+            rightOperand = null;
         }
     }
 

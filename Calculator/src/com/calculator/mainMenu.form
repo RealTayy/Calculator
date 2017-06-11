@@ -17,7 +17,7 @@
     <children>
       <component id="9c294" class="javax.swing.JButton" binding="b2">
         <constraints>
-          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -36,7 +36,7 @@
       </component>
       <component id="22f2d" class="javax.swing.JButton" binding="b5">
         <constraints>
-          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="2" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -54,7 +54,7 @@
       </component>
       <component id="5c348" class="javax.swing.JButton" binding="b3">
         <constraints>
-          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -90,7 +90,7 @@
       </component>
       <component id="b0a76" class="javax.swing.JButton" binding="bTimes">
         <constraints>
-          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -126,7 +126,7 @@
       </component>
       <component id="5d01c" class="javax.swing.JButton" binding="bEqual">
         <constraints>
-          <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="2" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -162,7 +162,7 @@
       </component>
       <component id="52899" class="javax.swing.JButton" binding="b1">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -252,7 +252,7 @@
       </component>
       <component id="d0490" class="javax.swing.JButton" binding="bBackspace">
         <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="2" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="78" height="58"/>
             <preferred-size width="78" height="58"/>
           </grid>
@@ -355,7 +355,7 @@
           <component id="9dc86" class="javax.swing.JTextArea" binding="inputTextArea">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="6" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="-1" height="56"/>
+                <preferred-size width="24" height="42"/>
               </grid>
             </constraints>
             <properties>
@@ -363,7 +363,7 @@
               <disabledTextColor color="-16777216"/>
               <doubleBuffered value="false"/>
               <editable value="false"/>
-              <font name="Droid Sans Mono" size="48" style="0"/>
+              <font name="Droid Sans Mono" size="42" style="0"/>
               <inheritsPopupMenu value="false"/>
               <lineWrap value="false"/>
               <opaque value="false"/>
